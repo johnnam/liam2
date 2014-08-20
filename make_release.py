@@ -11,12 +11,13 @@ import os
 import stat
 import subprocess
 import zipfile
-
 from datetime import date
 from os import chdir, makedirs
 from os.path import exists, getsize, abspath
 from shutil import copytree, copy2, rmtree as _rmtree
 from subprocess import check_output, STDOUT, CalledProcessError
+
+from six.moves import input, reraise
 
 WEBSITE = 'liam2.plan.be'
 
@@ -30,12 +31,6 @@ WEBSITE = 'liam2.plan.be'
 #---------------#
 # generic tools #
 #---------------#
-
-# some py2/py3 support
-try:
-    input = raw_input
-except NameError:
-    pass
 
 def size2str(value):
     unit = "bytes"
@@ -62,7 +57,7 @@ def _remove_readonly(function, path, excinfo):
         # retry removing
         function(path)
     else:
-        raise excinfo
+        reraise(*excinfo)
 
 
 def rmtree(path):

@@ -1,16 +1,18 @@
-from __future__ import division, print_function
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import collections
 from types import NoneType
 
 import numpy as np
+from six import string_types
 
-import config
-from diff_h5 import diff_array
-from data import append_carray_to_table, ColumnArray
-from expr import Expr, type_to_idx, idx_to_type, expr_eval, Variable
-from context import EntityContext
-import utils
+from . import config
+from .diff_h5 import diff_array
+from .data import append_carray_to_table, ColumnArray
+from .expr import Expr, type_to_idx, idx_to_type, expr_eval, Variable
+from .context import EntityContext
+from . import utils
 
 
 class BreakpointException(Exception):
@@ -280,7 +282,7 @@ class Function(AbstractProcessGroup):
         Process.__init__(self)
 
         assert isinstance(argnames, list)
-        assert all(isinstance(a, basestring) for a in argnames)
+        assert all(isinstance(a, string_types) for a in argnames)
         self.argnames = argnames
 
         assert code is None or isinstance(code, ProcessGroup)

@@ -1,9 +1,9 @@
 from __future__ import (absolute_import, division, print_function,
                         unicode_literals)
-from itertools import izip
 import os
 
 import numpy as np
+from six.moves import zip
 
 import config
 from align_link import align_link_nd
@@ -17,6 +17,7 @@ from links import LinkValue, Many2One
 from partition import partition_nd, filter_to_indices
 from importer import load_ndarray
 from utils import PrettyTable, LabeledArray
+
 
 
 def kill_axis(axis_name, value, expressions, possible_values, need):
@@ -93,7 +94,7 @@ def align_get_indices_nd(ctx_length, groups, need, filter_value, score,
     total_affected = 0
 
     aligned = np.zeros(ctx_length, dtype=bool)
-    for members_indices, group_need in izip(groups, need.flat):
+    for members_indices, group_need in zip(groups, need.flat):
         if len(members_indices):
             affected = group_need
             total_affected += affected

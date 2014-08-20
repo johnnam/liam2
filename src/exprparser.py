@@ -1,21 +1,23 @@
-from __future__ import division, print_function
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import ast
 
-from expr import Variable
-from utils import add_context
+from six import exec_, string_types
 
+from .expr import Variable
+from .utils import add_context
 
-import actions
-import aggregates
-import alignment
-import charts
-import groupby
-import links
-import matching
-import exprmisc
-import regressions
-import tfunc
+from . import actions
+from . import aggregates
+from . import alignment
+from . import charts
+from . import groupby
+from . import links
+from . import matching
+from . import exprmisc
+from . import regressions
+from . import tfunc
 
 functions = {}
 for module in (actions, aggregates, alignment, charts, groupby, links, matching,
@@ -64,7 +66,7 @@ class BoolToBitTransformer(ast.NodeTransformer):
 
 def parse(s, globals_dict=None, conditional_context=None, interactive=False,
           autovariables=False):
-    if not isinstance(s, basestring):
+    if not isinstance(s, string_types):
         return s
 
     # this prevents any function named something ending in "if"
@@ -140,7 +142,7 @@ def parse(s, globals_dict=None, conditional_context=None, interactive=False,
     for mode, compiled_code in to_eval:
         if mode == 'exec':
             #XXX: use "add_context" on exceptions?
-            exec compiled_code in context
+            exec_(compiled_code, context)
 
             # cleanup result. I tried different things to not get the context
             # "polluted" by builtins but could not achieve that, so I cleanup
