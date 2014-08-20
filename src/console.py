@@ -1,5 +1,5 @@
-from __future__ import print_function
-
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 import sys
 
 import numpy as np
@@ -203,7 +203,7 @@ class Console(object):
                     res = self.execute(s)
                     if res is not None:
                         print(res)
-            except Exception, e:
+            except Exception as e:
                 if config.debug:
                     import traceback
                     traceback.print_exc()

@@ -71,7 +71,7 @@ def parse(s, globals_dict=None, conditional_context=None, interactive=False,
     str_to_parse = s.replace('if(', 'where(')
     try:
         tree = ast.parse(str_to_parse)
-    except Exception, e:
+    except Exception as e:
         raise add_context(e, s)
     tree = BoolToBitTransformer().visit(tree)
     body = tree.body
@@ -99,7 +99,7 @@ def parse(s, globals_dict=None, conditional_context=None, interactive=False,
     try:
         to_eval = [(mode, compile(code, '<expr>', mode))
                    for mode, code in to_compile]
-    except Exception, e:
+    except Exception as e:
         raise add_context(e, s)
 
     context = {'False': False,
@@ -155,5 +155,5 @@ def parse(s, globals_dict=None, conditional_context=None, interactive=False,
             # IOError and such. Those are clearer when left unmodified.
             except EnvironmentError:
                 raise
-            except Exception, e:
+            except Exception as e:
                 raise add_context(e, s)

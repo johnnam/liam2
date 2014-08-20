@@ -1,5 +1,5 @@
-from __future__ import print_function
-
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 import tables
 
 from data import copy_table

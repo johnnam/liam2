@@ -357,7 +357,7 @@ class Expr(object):
                 # capabilities, we will be in trouble
                 res = LabeledArray(res, labels[0], labels[1])
             return res
-        except KeyError, e:
+        except KeyError as e:
             raise add_context(e, s)
         except Exception:
             raise

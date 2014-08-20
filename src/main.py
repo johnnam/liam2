@@ -1,4 +1,5 @@
-from __future__ import print_function
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import argparse
 import os
@@ -8,15 +9,15 @@ import warnings
 
 import yaml
 
-import config
-from simulation import Simulation
-from importer import csv2h5
-from console import Console
-from utils import AutoFlushFile, QtAvailable, QtProgressBar, QtGui
-import registry
-from data import populate_registry, H5Data
-from upgrade import upgrade
-from view import viewhdf
+from . import config
+from .simulation import Simulation
+from .importer import csv2h5
+from .console import Console
+from .utils import AutoFlushFile, QtAvailable, QtProgressBar, QtGui
+from . import registry
+from .data import populate_registry, H5Data
+from .upgrade import upgrade
+from .view import viewhdf
 
 __version__ = "0.8.2"
 
@@ -30,7 +31,7 @@ def eat_traceback(func, *args, **kwargs):
     try:
         try:
             return func(*args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             try:
                 import traceback
                 # output_directory might not be set at this point yet and it is
@@ -40,19 +41,19 @@ def eat_traceback(func, *args, **kwargs):
                 out_dir = config.output_directory
                 error_path = os.path.join(out_dir, 'error.log')
                 error_path = os.path.abspath(error_path)
-                with file(error_path, 'w') as f:
+                with open(error_path, 'w') as f:
                     traceback.print_exc(file=f)
                 error_log_path = error_path
-            except IOError, log_ex:
+            except IOError as log_ex:
                 print(
                     "WARNING: %s on '%s'" % (log_ex.strerror, log_ex.filename))
-            except Exception, log_ex:
+            except Exception as log_ex:
                 print(log_ex)
             raise e
-    except yaml.parser.ParserError, e:
+    except yaml.parser.ParserError as e:
         # eg, inconsistent spacing, no space after a - in a list, ...
         print("SYNTAX ERROR %s" % str(e.problem_mark).strip())
-    except yaml.scanner.ScannerError, e:
+    except yaml.scanner.ScannerError as e:
         # eg, tabs, missing colon for mapping. The reported problem is
         # different when it happens on the first line (no context_mark) and
         # when it happens on a subsequent line.
@@ -73,7 +74,7 @@ def eat_traceback(func, *args, **kwargs):
         if msg:
             msg = ": " + msg
         print("SYNTAX ERROR %s%s" % (str(mark).strip(), msg))
-    except yaml.reader.ReaderError, e:
+    except yaml.reader.ReaderError as e:
         if e.encoding == 'utf8':
             print("\nERROR in '%s': invalid character found, this probably "
                   "means you have used non ASCII characters (accents and "
@@ -81,13 +82,13 @@ def eat_traceback(func, *args, **kwargs):
                   "using the UTF8 encoding" % e.name)
         else:
             raise
-    except SyntaxError, e:
+    except SyntaxError as e:
         print("SYNTAX ERROR:", e.msg.replace('EOF', 'end of block'))
         if e.text is not None:
             print(e.text)
             offset_str = ' ' * (e.offset - 1) if e.offset > 0 else ''
             print(offset_str + '^')
-    except Exception, e:
+    except Exception as e:
         print("\nERROR:", str(e))
 
     if error_log_path is not None:

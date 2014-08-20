@@ -2,7 +2,8 @@
 # coding=utf-8
 # Release script for LIAM2
 # Licence: GPLv3
-from __future__ import print_function
+from __future__ import (absolute_import, division, print_function,
+                        unicode_literals)
 
 import errno
 import fnmatch
@@ -30,6 +31,12 @@ WEBSITE = 'liam2.plan.be'
 # generic tools #
 #---------------#
 
+# some py2/py3 support
+try:
+    input = raw_input
+except NameError:
+    pass
+
 def size2str(value):
     unit = "bytes"
     if value > 1024.0:
@@ -55,7 +62,7 @@ def _remove_readonly(function, path, excinfo):
         # retry removing
         function(path)
     else:
-        raise
+        raise excinfo
 
 
 def rmtree(path):
@@ -65,7 +72,7 @@ def rmtree(path):
 def call(*args, **kwargs):
     try:
         return check_output(*args, stderr=STDOUT, **kwargs)
-    except CalledProcessError, e:
+    except CalledProcessError as e:
         print(e.output)
         raise e
 
@@ -96,7 +103,7 @@ def yes(msg, default='y'):
     while answer not in ('', 'y', 'n'):
         if answer is not None:
             print("answer should be 'y', 'n', or <return>")
-        answer = raw_input(msg + choices).lower()
+        answer = input(msg + choices).lower()
     return (default if answer == '' else answer) == 'y'
 
 

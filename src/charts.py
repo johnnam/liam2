@@ -18,7 +18,7 @@ try:
     import matplotlib.pyplot as plt
     # set interactive mode
     # plt.ion()
-except ImportError, e:
+except ImportError as e:
     plt = ExceptionOnGetAttr(e)
     print("Warning: charts functionality is not available because "
           "'matplotlib.pyplot' could not be imported (%s)." % e)
