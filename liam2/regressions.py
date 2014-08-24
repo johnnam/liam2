@@ -77,7 +77,7 @@ class LogitScore(CompoundExpression):
         return expr
 
     def __str__(self):
-        return '%s(%s)' % (self.__name__, self.expr)
+        return '%s(%s)' % (self.func_name, self.expr)
 
     #noinspection PyUnusedLocal
     def dtype(self, context):

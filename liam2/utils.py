@@ -384,7 +384,8 @@ class LabeledArray(np.ndarray):
                         if not obj.dim_names:
                             obj.dim_names = None
             elif isinstance(key, slice):
-                obj.pvalues = [self.pvalues[0][key]] + [self.pvalues[1:]]
+                if self.pvalues is not None:
+                    obj.pvalues = [self.pvalues[0][key]] + [self.pvalues[1:]]
             # handle fancy indexing (for a 1d array)
             elif isinstance(key, np.ndarray):
                 obj.dim_names = None

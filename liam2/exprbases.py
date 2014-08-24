@@ -58,7 +58,7 @@ class FunctionExpression(EvaluableExpression):
         yield self
 
     def __str__(self):
-        return '%s(%s)' % (self.__name__, self.expr)
+        return '%s(%s)' % (self.func_name, self.expr)
 
     def collect_variables(self, context):
         return collect_variables(self.expr, context)
@@ -91,7 +91,7 @@ class FilteredExpression(FunctionExpression):
 
     def __str__(self):
         filter_str = ', %s' % self.filter if self.filter is not None else ''
-        return '%s(%s%s)' % (self.__name__, self.expr, filter_str)
+        return '%s(%s%s)' % (self.func_name, self.expr, filter_str)
 
     def collect_variables(self, context):
         expr_vars = collect_variables(self.expr, context)
@@ -146,7 +146,7 @@ class NumpyFunction(EvaluableExpression):
         raise NotImplementedError()
 
     def __str__(self):
-        func_name = self.__name__
+        func_name = self.func_name
         if func_name is None:
             func_name = self.np_func[0].__name__
         kwargs = self.kwargs

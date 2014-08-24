@@ -285,7 +285,7 @@ class Choice(EvaluableExpression):
                                     else '[%s]' %
                                          ', '.join(str(b)
                                                    for b in np.diff(bins)))
-        return "%s(%s%s)" % (self.__name__, list(self.choices), weights_str)
+        return "%s(%s%s)" % (self.func_name, list(self.choices), weights_str)
 
 
 #------------------------------------

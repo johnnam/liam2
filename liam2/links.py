@@ -256,7 +256,7 @@ class CountLink(AggregateLink):
         else:
             target_filter = ""
         #noinspection PyProtectedMember
-        return '%s(%s%s)' % (self.__name__, self.link._name, target_filter)
+        return '%s(%s%s)' % (self.func_name, self.link._name, target_filter)
 
 
 class SumLink(CountLink):
@@ -298,7 +298,7 @@ class SumLink(CountLink):
         else:
             target_filter = ""
         #noinspection PyProtectedMember
-        return '%s(%s, %s%s)' % (self.__name__, self.link._name,
+        return '%s(%s, %s%s)' % (self.func_name, self.link._name,
                                  self.target_expr, target_filter)
 
 
@@ -357,7 +357,7 @@ class MinLink(AggregateLink):
         else:
             target_filter = ""
         #noinspection PyProtectedMember
-        return '%s(%s, %s%s)' % (self.__name__, self.link._name,
+        return '%s(%s, %s%s)' % (self.func_name, self.link._name,
                                  self.target_expr, target_filter)
 
 
