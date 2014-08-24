@@ -1,7 +1,6 @@
 import collections
 
 import numpy as np
-from six import string_types
 
 from . import config
 from .diff_h5 import diff_array
@@ -278,7 +277,7 @@ class Function(AbstractProcessGroup):
         Process.__init__(self)
 
         assert isinstance(argnames, list)
-        assert all(isinstance(a, string_types) for a in argnames)
+        assert all(isinstance(a, str) for a in argnames)
         self.argnames = argnames
 
         assert code is None or isinstance(code, ProcessGroup)

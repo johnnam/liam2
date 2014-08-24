@@ -15,8 +15,6 @@ from os.path import exists, getsize, abspath
 from shutil import copytree, copy2, rmtree as _rmtree
 from subprocess import check_output, STDOUT, CalledProcessError
 
-from six.moves import input, reraise
-
 WEBSITE = 'liam2.plan.be'
 
 #TODO: add more scripts to implement the "git flow" model
@@ -55,7 +53,7 @@ def _remove_readonly(function, path, excinfo):
         # retry removing
         function(path)
     else:
-        reraise(*excinfo)
+        raise excinfo[1]
 
 
 def rmtree(path):

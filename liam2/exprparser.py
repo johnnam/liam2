@@ -1,7 +1,5 @@
 import ast
 
-from six import exec_, string_types
-
 from .expr import Variable
 from .utils import add_context
 
@@ -63,7 +61,7 @@ class BoolToBitTransformer(ast.NodeTransformer):
 
 def parse(s, globals_dict=None, conditional_context=None, interactive=False,
           autovariables=False):
-    if not isinstance(s, string_types):
+    if not isinstance(s, str):
         return s
 
     # this prevents any function named something ending in "if"
@@ -139,7 +137,7 @@ def parse(s, globals_dict=None, conditional_context=None, interactive=False,
     for mode, compiled_code in to_eval:
         if mode == 'exec':
             #XXX: use "add_context" on exceptions?
-            exec_(compiled_code, context)
+            exec(compiled_code, context)
 
             # cleanup result. I tried different things to not get the context
             # "polluted" by builtins but could not achieve that, so I cleanup
