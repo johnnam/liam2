@@ -1,4 +1,4 @@
-from __future__ import division
+
 
 import re
 from orderedset import OrderedSet
@@ -29,11 +29,11 @@ def simplify(expr):
     simplified = expr.simplify() if isinstance(expr, Expr) else expr
     while simplified is not expr:
         if VERBOSE_SIMPLIFY:
-            print """simplifying
+            print("""simplifying
 %s
 to
 %s
-""" % (expr, simplified) 
+""" % (expr, simplified)) 
         expr = simplified
         simplified = expr.simplify() if isinstance(expr, Expr) else expr
     return simplified
@@ -322,7 +322,7 @@ class BinaryOp(Expr):
 
         if not isinstance(expr1, Expr) and not isinstance(expr2, Expr):
             res = eval('%s %s %s' % (expr1, self.op, expr2))
-            print "Warning: converted %s to %s" % (self, res)
+            print("Warning: converted %s to %s" % (self, res))
             return res
 
         return self
@@ -658,7 +658,7 @@ class Function(Expr):
     def as_string(self, indent):
         args = ', '.join(as_string(arg, indent) for arg in self.args)
         kwargs = ', '.join("%s=%s" % (k, as_string(v, indent))
-                           for k, v in self.kwargs.iteritems())
+                           for k, v in self.kwargs.items())
         all_args = "%s%s%s" % (args, ', ', kwargs) if args and kwargs else args
         return "%s(%s)" % (self.name, all_args)
 
@@ -676,16 +676,16 @@ class Function(Expr):
             
     def simplify(self):
         sargs = [simplify(arg) for arg in self.args]
-        skwargs = dict((k, simplify(v)) for k, v in self.kwargs.items())
+        skwargs = dict((k, simplify(v)) for k, v in list(self.kwargs.items()))
         if all(sarg is arg for arg, sarg in zip(self.args, sargs)) and \
-           all(skwargs[k] is self.kwargs[k] for k in self.kwargs.iterkeys()):
+           all(skwargs[k] is self.kwargs[k] for k in self.kwargs.keys()):
             return self
         return self.__class__(*sargs, **skwargs)
 
     def flatten(self):
         return ('func', (tuple(flatten(arg) for arg in self.args),
                          tuple((k, flatten(v)) 
-                               for k, v in self.kwargs.iteritems())))
+                               for k, v in self.kwargs.items())))
 
         
 class Where(Function):
@@ -1004,7 +1004,7 @@ def parse(s, globals=None, expression=True):
     try:
         c = compile(str_to_parse, '<expr>', mode)
     except SyntaxError:
-        print "syntax error in: ", s
+        print("syntax error in: ", s)
         raise
 
 #    varnames = c.co_names
@@ -1024,6 +1024,6 @@ def parse(s, globals=None, expression=True):
     
         # cleanup result
         del context['__builtins__']
-        for funcname in functions.keys():
+        for funcname in list(functions.keys()):
             del context[funcname]
         return context

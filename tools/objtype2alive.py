@@ -6,11 +6,11 @@ from data_main import load_objtype, export_csv_3col
 import numpy as np
 
 if __name__ == '__main__':
-    print 'Using Python %s' % sys.version
+    print('Using Python %s' % sys.version)
     
     args = sys.argv
     if len(args) < 2:
-        print "Usage: %s [entity_name]" % args[0]
+        print("Usage: %s [entity_name]" % args[0])
         sys.exit()
     else:
         ent_name = args[1]
@@ -24,4 +24,4 @@ if __name__ == '__main__':
     data['alive'] = 1 
     
     export_csv_3col("%s_co_alive.txt" % ent_name, data, 'alive', "\t")
-    print "done"
+    print("done")

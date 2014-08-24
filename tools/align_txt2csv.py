@@ -1,6 +1,6 @@
 import sys
 import csv
-from itertools import izip
+
 from os import path 
 
 def rename_var(name):
@@ -16,10 +16,11 @@ def rename_var(name):
         return 'period'
     return name
 
+
 def load_txt_align(input_path, inverted=False):
     start_col = 2 + int(not inverted)
              
-    with open(input_path, "rb") as f:
+    with open(input_path) as f:
         lines = list(csv.reader(f, delimiter='\t'))
 
     assert lines[15][0] == 'name1'
@@ -57,14 +58,14 @@ def load_txt_align(input_path, inverted=False):
             for line in lines[:ncateg1]]
     return (var1, var2), (colvals, rowvals), data
 
+
 def save_csv_align(output_path, variables, possible_values, data):
-    
     colvals, rowvals = possible_values
-    with open(output_path, 'wb') as f:
+    with open(output_path, 'w') as f:
         writer = csv.writer(f)
         writer.writerow([rename_var(name) for name in variables])
         writer.writerow([''] + colvals)
-        for rowval, line in izip(rowvals, data):
+        for rowval, line in zip(rowvals, data):
             writer.writerow([rowval] + line)
 
 def convert_txt_align(input_path, output_path=None, invert=False):
@@ -74,17 +75,17 @@ def convert_txt_align(input_path, output_path=None, invert=False):
         basename, ext = path.splitext(fname)
         assert basename.startswith('al_regr_')
         output_path = path.join(fpath, "al_%s.csv" % basename[8:])
-    print "converting '%s' to '%s'" % (input_path, output_path)
+    print("converting '%s' to '%s'" % (input_path, output_path))
     try:
         variables, possible_values, data = load_txt_align(input_path, invert)
         save_csv_align(output_path, variables, possible_values, data)
     except:
-        print "FAILED"
+        print("FAILED")
     
 if __name__ == '__main__':
     args = sys.argv
     if len(args) < 2:
-        print "Usage: %s [input_path] [output_path] [invert]" % args[0]
+        print("Usage: %s [input_path] [output_path] [invert]" % args[0])
         sys.exit()
     else:
         input_path = args[1]

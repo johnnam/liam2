@@ -1,6 +1,6 @@
 import csv
 import itertools
-from itertools import izip, groupby
+from itertools import groupby
 import operator
 import os
 from os import path
@@ -47,8 +47,9 @@ def load_renames(fpath):
     else:
         return {}
 
+
 def load_txt_def(input_path, name_idx):
-    with open(input_path, "rb") as f:
+    with open(input_path, "r") as f:
         lines = list(csv.reader(f, delimiter='\t'))
     firstline = lines[0]
     colnames = firstline[:name_idx] + firstline[name_idx+1:]
@@ -63,12 +64,12 @@ def load_txt_def(input_path, name_idx):
         if name.startswith('first_'):
             current_obj = name[6:]
             data[current_obj] = {}
-            print "reading '%s' variables" % current_obj
+            print("reading '%s' variables" % current_obj)
         elif name.startswith('end_'):
             current_obj = None
-            print "done"
+            print("done")
         elif current_obj is not None: 
-            data[current_obj][name] = dict(zip(colnames, line))
+            data[current_obj][name] = dict(list(zip(colnames, line)))
     return data
 
 def load_links(input_path):
@@ -82,13 +83,13 @@ def load_fields(input_path):
         'int': int,
         'int1000': float
     }
-    print "determining field types..."
-    for obj_type, obj_fields in data.iteritems():
-        print " *", obj_type
-        for name, fdef in obj_fields.iteritems(): 
+    print("determining field types...")
+    for obj_type, obj_fields in data.items():
+        print(" *", obj_type)
+        for name, fdef in obj_fields.items(): 
             real_dtype = typemap.get(fdef['Type'])
             if real_dtype is None:
-                print "Warning: unknown type '%s', using int" % fdef['Type']
+                print("Warning: unknown type '%s', using int" % fdef['Type'])
                 real_dtype = int
             ncateg = int(fdef['nCategory']) 
             if ncateg == 2:  
@@ -100,7 +101,7 @@ def load_fields(input_path):
                 #TODO: import the list of possible values
                 real_dtype = int
             obj_fields[name] = {'type': real_dtype}
-        print "   done"
+        print("   done")
     return data
 
 def transpose_table(data):
@@ -121,7 +122,7 @@ def transpose_and_convert(lines):
     funcs = [float for _ in range(len(lines))]
     funcs[0] = int
     converted = [tuple([func(cell.replace('--', 'NaN'))
-                  for cell, func in izip(row, funcs)])
+                  for cell, func in zip(row, funcs)])
                  for row in transposed]
     return names, converted
 
@@ -166,7 +167,7 @@ class TextImporter(object):
         self.conditions = None
 
     def unimplemented(self, pos, line, lines):
-        print "unimplemented keyword: %s" % line[0]
+        print("unimplemented keyword: %s" % line[0])
         return pos + 1, None
     
     def skipline(self, pos, line, lines):
@@ -174,7 +175,7 @@ class TextImporter(object):
     
     def skipifzero(self, pos, line, lines):
         if len(line) > 1 and line[1] and float(line[1]):
-            print "unimplemented keyword:", line[0]
+            print("unimplemented keyword:", line[0])
         return pos + 1, None
     
     def readvalues(self, *args):
@@ -231,7 +232,7 @@ class TextImporter(object):
         del chunks[1]
         name = '_'.join(chunks)
     
-        with open(self.input_path, "rb") as f:
+        with open(self.input_path, "r") as f:
             lines = list(csv.reader(f, delimiter='\t'))
     
         values = {'name': name}
@@ -249,7 +250,7 @@ class TextImporter(object):
                 
             f = self.keywords.get(keyword)
             if f is None:
-                print "unknown keyword: '%s'" % keyword
+                print("unknown keyword: '%s'" % keyword)
                 pos += 1
                 continue
                 
@@ -269,7 +270,7 @@ class TextImporter(object):
     def var_type(self, name):
         var_def = self.fields.get(name)
         if var_def is None:
-            print "Warning: field '%s' not found (assuming int) !" % name
+            print("Warning: field '%s' not found (assuming int) !" % name)
             return int
         else:
             return var_def['type']
@@ -369,7 +370,7 @@ class RegressionImporter(TextImporter):
     def interactionterms(self, pos, line, lines):
         numterms = int(line[1]) if line[1] else 0
         if numterms:
-            print "unimplemented keyword: interactionterms"
+            print("unimplemented keyword: interactionterms")
         return pos + 1, None
 
     # ------------------------
@@ -422,7 +423,7 @@ class RegressionImporter(TextImporter):
         if bool(data['align']):
             kwargs['align'] = 'al_p_%s.csv' % data['name']
             if pred_type != 2:
-                print "unimplemented align for pred_type:", pred_type
+                print("unimplemented align for pred_type:", pred_type)
               
         if pred_type == 0:   # continuous
             expr = ContRegr(expr, **kwargs)
@@ -433,10 +434,10 @@ class RegressionImporter(TextImporter):
         elif pred_type == 3: # logged continuous
             expr = LogRegr(expr, **kwargs) 
         elif pred_type == 4: # clipped logged continuous
-            print "Converting clipped logged continuous to logged continuous"
+            print("Converting clipped logged continuous to logged continuous")
             expr = LogRegr(expr, **kwargs)
         else:
-            print "unimplemented predictor type:", pred_type
+            print("unimplemented predictor type:", pred_type)
 
         return predictor, expr
     
@@ -548,10 +549,10 @@ class TransitionImporter(TextImporter):
         
         globals.update((name, Variable(self.var_name(name), 
                                        self.var_type(name)))
-                       for name in self.fields.keys())
+                       for name in list(self.fields.keys()))
         links = [(name, Link(name, link_def['keyorig'], link_def['desttype'],
                              self.renames.get(link_def['desttype'], {})))
-                 for name, link_def in self.links.iteritems()]
+                 for name, link_def in self.links.items()]
         globals.update(links)
         return parse(data, globals)
 
@@ -567,7 +568,7 @@ class TransitionImporter(TextImporter):
         for cond in conditions:
             for orcond in cond['condition']:
                 if ('p_co_alive', 1.0, 1.0) in orcond:
-                    print "   Warning: removed 'p_co_alive == 1' condition"
+                    print("   Warning: removed 'p_co_alive == 1' condition")
                     orcond.remove(('p_co_alive', 1.0, 1.0))
                     
         lastcond = conditions[-1]
@@ -590,14 +591,14 @@ class TrapImporter(TextImporter):
 
 def load_processes(input_path, fnames,
                    fields, constants, links, obj_type, renames):
-    print "=" * 40
+    print("=" * 40)
     data = []
     predictor_seen = {}
     parsed = []
     obj_renames = renames.get(obj_type, {})
-    print "pass 1: parsing files..."
+    print("pass 1: parsing files...")
     for fname in fnames:
-        print " - %s" % fname
+        print(" - %s" % fname)
         fpath = path.join(input_path, fname)
         if fname.startswith('regr_'):
             importer = RegressionImporter(fpath, fields, renames)
@@ -614,8 +615,8 @@ def load_processes(input_path, fnames,
             parsed.append((fname, fullname, predictor, expr))
             predictor_seen.setdefault(predictor, []).append(fullname)
 
-    print "-" * 40
-    print "pass 2: simplifying..."
+    print("-" * 40)
+    print("pass 2: simplifying...")
     other_types = {
         'regr': ('tran', 'trap'),
         'tran': ('regr', 'trap'),
@@ -624,12 +625,12 @@ def load_processes(input_path, fnames,
     proc_name_per_file = {}
     proc_names = {}
     for fname, fullname, predictor, expr in parsed:
-        print " - %s (%s)" % (fname, predictor)
+        print(" - %s (%s)" % (fname, predictor))
         type_, name = fullname.split('_', 1)
         expr_str = str(simplify(expr))
         if len(predictor_seen[predictor]) == 1:
             if name != predictor:
-                print "   renaming '%s' process to '%s'" % (name, predictor)
+                print("   renaming '%s' process to '%s'" % (name, predictor))
                 name = predictor
             res = expr_str
         else:
@@ -644,14 +645,14 @@ def load_processes(input_path, fnames,
             while name in proc_names:
                 name += '_dupe'
 
-            print "   renaming process to '%s'" % name
+            print("   renaming process to '%s'" % name)
             
             res = {'predictor': predictor,
                    'expr': expr_str}
         proc_names[name] = True
         data.append((name, res))
         proc_name_per_file[fname] = name
-    print "=" * 40
+    print("=" * 40)
     return proc_name_per_file, data
 
 def convert_all_align(input_path):
@@ -713,11 +714,11 @@ def constants2yaml(constants):
 def entities2yaml(entities):
     entity_tmpl = "    %s:%s%s%s\n"
     e_strings = []
-    for ent_name, entity in entities.iteritems():
+    for ent_name, entity in entities.items():
         fields = entity['fields']
         if fields:
             fields = sorted([(fname, f['type'].__name__)
-                             for fname, f in fields.iteritems()]) 
+                             for fname, f in fields.items()]) 
             fields_str = '\n        fields:\n            %s' \
                          % orderedmap2yaml(fields, 3)
         else:
@@ -765,7 +766,7 @@ simulation:
 if __name__ == '__main__':
     args = sys.argv
     if len(args) < 3:
-        print "Usage: %s input_path output_path [rename_file] [filtered]" % args[0]
+        print("Usage: %s input_path output_path [rename_file] [filtered]" % args[0])
         sys.exit()
     else:
         input_path = args[1]
@@ -785,8 +786,8 @@ if __name__ == '__main__':
     process_list = load_agespine(path.join(input_path, 'agespine.txt'))
     
     fields = {}
-    for obj_type, obj_fields in fields_per_obj.iteritems():
-        for name, fdef in obj_fields.iteritems():
+    for obj_type, obj_fields in fields_per_obj.items():
+        for name, fdef in obj_fields.items():
             fields['%s_%s' % (obj_type, name)] = fdef
 
     if fname is None:
@@ -821,12 +822,12 @@ if __name__ == '__main__':
 
     proc_name_per_file = {}        
     entities = {}
-    for obj_type, obj_fields in fields_per_obj.iteritems():
-        obj_links = [(k, v) for k, v in links.items() 
+    for obj_type, obj_fields in fields_per_obj.items():
+        obj_links = [(k, v) for k, v in list(links.items()) 
                      if v['origintype'] == obj_type]
         obj_fields.update([(v['keyorig'], {'type': int}) for k, v in obj_links])
         obj_proc_files = proc_per_obj.get(obj_type, [])
-        print "loading processes for %s" % obj_type
+        print("loading processes for %s" % obj_type)
         obj_proc_names, obj_processes = load_processes(input_path, 
                                                        obj_proc_files,
                                                        fields, constants, links,
@@ -835,7 +836,7 @@ if __name__ == '__main__':
         proc_name_per_file.update(obj_proc_names)
         
         obj_renames = renames.get(obj_type, {})
-        for old_name in obj_fields.keys():
+        for old_name in list(obj_fields.keys()):
              new_name = obj_renames.get(old_name)
              if new_name is not None:
                  obj_fields[new_name] = obj_fields.pop(old_name)
@@ -851,7 +852,7 @@ if __name__ == '__main__':
         if proc_name is not None:
             process_names.append((obj, proc_name))
                      
-    print "exporting to '%s'" % output_path
+    print("exporting to '%s'" % output_path)
     with open(output_path, 'w') as f_out:
         # default YAML serialization is ugly, so we produce the string ourselves
         f_out.write(simulation2yaml(constants, entities, process_names))
@@ -860,4 +861,4 @@ if __name__ == '__main__':
     
     if fname is None:
         convert_all_align(input_path)
-    print "done."
+    print("done.")
