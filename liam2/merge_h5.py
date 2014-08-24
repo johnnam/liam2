@@ -10,14 +10,14 @@ __version__ = "0.3"
 def get_h5_fields(input_file):
     #noinspection PyProtectedMember
     return dict((table._v_name, get_fields(table))
-                for table in input_file.iterNodes(input_file.root.entities))
+                for table in input_file.iter_nodes(input_file.root.entities))
 
 
 def merge_h5(input1_path, input2_path, output_path):
-    input1_file = tables.openFile(input1_path, mode="r")
-    input2_file = tables.openFile(input2_path, mode="r")
+    input1_file = tables.open_file(input1_path, mode="r")
+    input2_file = tables.open_file(input2_path, mode="r")
 
-    output_file = tables.openFile(output_path, mode="w")
+    output_file = tables.open_file(output_path, mode="w")
 
     print("copying globals from", input1_path, end=' ')
     #noinspection PyProtectedMember
@@ -33,14 +33,14 @@ def merge_h5(input1_path, input2_path, output_path):
     ent_names1 = set(fields1.keys())
     ent_names2 = set(fields2.keys())
 
-    output_entities = output_file.createGroup("/", "entities", "Entities")
+    output_entities = output_file.create_group("/", "entities", "Entities")
     for ent_name in sorted(ent_names1 | ent_names2):
         print()
         print(ent_name)
         ent_fields1 = fields1.get(ent_name, [])
         ent_fields2 = fields2.get(ent_name, [])
         output_fields = merge_items(ent_fields1, ent_fields2)
-        output_table = output_file.createTable(output_entities, ent_name,
+        output_table = output_file.create_table(output_entities, ent_name,
                                                np.dtype(output_fields))
 
         if ent_name in ent_names1:

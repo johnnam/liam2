@@ -214,8 +214,8 @@ class ColumnArray(object):
 #                chunk = np.empty(buffer_rows, dtype=dtype)
             chunk_indices = indices[start:stop]
 # needs pytables3
-#            table.readCoordinates(chunk_indices, out=chunk)
-            chunk = table.readCoordinates(chunk_indices)
+#            table.read_coordinates(chunk_indices, out=chunk)
+            chunk = table.read_coordinates(chunk_indices)
             ca[start:stop] = chunk
             start += buffer_rows
             stop += buffer_rows
@@ -432,7 +432,7 @@ def append_table(input_table, output_table, chunksize=10000, condition=None,
         chunk_start = chunk_num * chunksize
         chunk_stop = min(chunk_start + chunksize, numrows)
         if condition is not None:
-            input_data = input_table.readWhere(condition, start=chunk_start,
+            input_data = input_table.read_where(condition, start=chunk_start,
                                                stop=chunk_stop)
         else:
             input_data = input_table.read(chunk_start, chunk_stop)
@@ -472,7 +472,7 @@ def copy_table(input_table, output_node, output_fields=None,
         output_dtype = input_table.dtype
     else:
         output_dtype = np.dtype(output_fields)
-    output_table = output_file.createTable(output_node, input_table.name,
+    output_table = output_file.create_table(output_node, input_table.name,
                                            output_dtype, **complete_kwargs)
     return append_table(input_table, output_table, chunksize, condition,
                         stop=stop, show_progress=show_progress)
@@ -651,7 +651,7 @@ class DataSet(object):
 def index_tables(globals_def, entities, fpath):
     print("reading data from %s ..." % fpath)
 
-    input_file = tables.openFile(fpath, mode="r")
+    input_file = tables.open_file(fpath, mode="r")
     try:
         input_root = input_file.root
 
@@ -762,12 +762,12 @@ class H5Data(DataSource):
     def run(self, globals_def, entities, start_period):
         input_file, dataset = index_tables(globals_def, entities,
                                            self.input_path)
-        output_file = tables.openFile(self.output_path, mode="w")
+        output_file = tables.open_file(self.output_path, mode="w")
 
         try:
             globals_node = getattr(input_file.root, 'globals', None)
             if globals_node is not None:
-                output_globals = output_file.createGroup("/", "globals",
+                output_globals = output_file.create_group("/", "globals",
                                                          "Globals")
                 # index_tables already checks whether all tables exist and
                 # are coherent with globals_def
@@ -777,9 +777,9 @@ class H5Data(DataSource):
                         getattr(globals_node, name)._f_copy(output_globals)
 
             entities_tables = dataset['entities']
-            output_entities = output_file.createGroup("/", "entities",
+            output_entities = output_file.create_group("/", "entities",
                                                       "Entities")
-            output_indexes = output_file.createGroup("/", "indexes", "Indexes")
+            output_indexes = output_file.create_group("/", "indexes", "Indexes")
             print(" * copying tables")
             for ent_name, entity in entities.items():
                 print(ent_name, "...")
@@ -788,7 +788,7 @@ class H5Data(DataSource):
 
                 table = entities_tables[ent_name]
 
-                index_node = output_file.createGroup("/indexes", ent_name)
+                index_node = output_file.create_group("/indexes", ent_name)
                 entity.output_index_node = index_node
                 entity.input_index = table.id2rownum_per_period
                 entity.input_rows = table.period_index
@@ -851,14 +851,14 @@ class Void(DataSource):
         self.output_path = output_path
 
     def run(self, globals_def, entities, start_period):
-        output_file = tables.openFile(self.output_path, mode="w")
-        output_entities = output_file.createGroup("/", "entities", "Entities")
+        output_file = tables.open_file(self.output_path, mode="w")
+        output_entities = output_file.create_group("/", "entities", "Entities")
         for entity in entities.values():
             dtype = np.dtype(entity.fields)
             entity.array = ColumnArray.empty(0, dtype=dtype)
             entity.array_period = start_period
             entity.id_to_rownum = np.empty(0, dtype=int)
-            output_table = output_file.createTable(
+            output_table = output_file.create_table(
                 output_entities, entity.name, dtype,
                 title="%s table" % entity.name)
 
@@ -870,7 +870,7 @@ class Void(DataSource):
 def populate_registry(fpath):
     from . import entities
     from . import registry
-    h5in = tables.openFile(fpath, mode="r")
+    h5in = tables.open_file(fpath, mode="r")
     h5root = h5in.root
     for table in h5root.entities:
         registry.entity_registry.add(entities.Entity.from_table(table))
