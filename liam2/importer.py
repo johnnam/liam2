@@ -468,7 +468,7 @@ def interpolate(target, arrays, id_periods, fields):
 
 def load_ndarray(fpath, celltype=None):
     print(" - reading", fpath)
-    with open(fpath, newline='') as f:
+    with open(fpath) as f:
         reader = csv.reader(f)
         line_stream = skip_comment_cells(strip_rows(reader))
         header = next(line_stream)
