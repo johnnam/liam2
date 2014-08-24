@@ -1,11 +1,8 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
-
 import numpy as np
 import tables
 
-from data import merge_arrays, get_fields, index_table_light
-from utils import timed, loop_wh_progress, merge_items
+from .data import merge_arrays, get_fields, index_table_light
+from .utils import timed, loop_wh_progress, merge_items
 
 __version__ = "0.3"
 

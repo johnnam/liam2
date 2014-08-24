@@ -1,11 +1,9 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 import tables
 import numpy as np
 import time
 
-from data import copy_table
-from utils import timed, time2str
+from .data import copy_table
+from .utils import timed, time2str
 
 __version__ = "0.1"
 

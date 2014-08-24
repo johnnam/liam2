@@ -1,9 +1,7 @@
-from __future__ import (absolute_import, division, print_function,
-                        unicode_literals)
 import tables
 
-from data import copy_table
-from utils import timed
+from .data import copy_table
+from .utils import timed
 
 __version__ = "0.3"
 
