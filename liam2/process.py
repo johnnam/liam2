@@ -5,7 +5,7 @@ import numpy as np
 from . import config
 from .diff_h5 import diff_array
 from .data import append_carray_to_table, ColumnArray
-from .expr import Expr, type_to_idx, idx_to_type, expr_eval, Variable
+from .expr import Expr, type_to_idx, idx_to_type, expr_eval
 from .context import EntityContext
 from . import utils
 

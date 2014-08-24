@@ -161,7 +161,7 @@ class RemoveIndividuals(Process):
 
         print("%d %s(s) removed (%d -> %d)" % (filter_value.sum(), entity.name,
                                                len_before, len(entity.array)),
-                                               end=' ')
+              end=' ')
 
 
 class Breakpoint(Process):
@@ -274,7 +274,7 @@ class AssertEqual(ComparisonAssert):
             result = np.array_equal(v1, v2)
             nan_v1, nan_v2 = isnan(v1), isnan(v2)
             if (not result and np.any(nan_v1 | nan_v2) and
-                np.array_equal(nan_v1, nan_v2)):
+                    np.array_equal(nan_v1, nan_v2)):
                 return False, ' but arrays contain NaNs, did you meant to ' \
                               'use assertNanEqual instead?'
             else:

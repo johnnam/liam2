@@ -129,7 +129,7 @@ def detect_column_types(iterable):
     for i, colname in enumerate(header):
         coltype = coltypes[i]
         if coltype == 0:
-            print("Warning: column %s is all empty, assuming it is float" \
+            print("Warning: column %s is all empty, assuming it is float"
                   % colname)
             coltypes[i] = 3
     num2type = [None, bool, int, float]
@@ -636,7 +636,7 @@ def load_def(localdir, ent_name, section_def, required_fields):
             target_fields = required_fields + fields
             fields_per_file = [[(name, type_) for name, type_ in target_fields
                                if name in f.field_names]
-                              for f in files]
+                               for f in files]
             total_fields = set.union(*[set(f.field_names) for f in files])
             missing = set(name for name, _ in target_fields) - total_fields
             if missing:
