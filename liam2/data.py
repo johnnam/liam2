@@ -675,6 +675,7 @@ def index_tables(globals_def, entities, fpath):
                     if kind == 'table':
                         fields, numlines, datastream, csvfile = info
                         array = stream_to_array(fields, datastream, numlines)
+                        csvfile.close()
                     else:
                         assert kind == 'ndarray'
                         array = info
